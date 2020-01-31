@@ -1,0 +1,24 @@
+@name Multi-Weld
+@persist [D1 D2]:number [Array Color Alpha]:array
+if(first()){
+    runOnTick(1)
+    runOnLast(1)
+    enableConstraintUndo(0)
+}
+if(owner():keyAttack1() & owner():weapon():toString():explode(" ")[2,string] == (("["+owner():weapon():id()+"]")+"[gmod_tool]") & convar("gmod_toolmode") == "simfphyswheeleditor" & owner():aimEntity():getColor() != vec(255,1,255) & D1 & owner():aimEntity():owner() == owner()){
+    Array:pushEntity(owner():aimEntity())
+    Color:pushVector4(owner():aimEntity():getColor4())
+    owner():aimEntity():setColor(vec4(255,1,255,255))
+    D1 = 0
+}elseif(!owner():keyAttack1()){D1 = 1}
+if(owner():keyAttack2() & convar("gmod_toolmode") == "simfphyswheeleditor" & D2 & Array:count()>0 & owner():aimEntity():owner() == owner()){
+    for(I=1,Array:count()){
+        weld(Array[I,entity],owner():aimEntity())
+        Array[I,entity]:setColor(Color[I,vector4])
+    }
+    print("Welded.")
+    Array:clear()
+    Color:clear()
+    D2 = 0
+}elseif(!owner():keyAttack2()){D2 = 1}
+if(last()){for(I=1,Array:count()){Array[I,entity]:setColor(Color[I,vector4])}}
