@@ -1,6 +1,7 @@
 @name Multi-Weld
 @persist [D1 D2]:number [Array Color Alpha]:array
 if(first()){
+    hint("Multi-Weld Loaded",2)
     runOnTick(1)
     runOnLast(1)
     enableConstraintUndo(0)
