@@ -1,18 +1,37 @@
 @name Multi-Weld
-@persist [D1 D2]:number [Array Color Alpha]:array
+@persist [LastSaid Contents Array Color Alpha]:array Color4:vector4 Count:number
 if(first()){
-    hint("Multi-Weld Loaded",2)
     runOnTick(1)
     runOnLast(1)
+    runOnFile(1)
+    runOnChat(1)
     enableConstraintUndo(0)
+    if(fileCanLoad() & fileCanWrite()){fileLoad("GitHub/Mutli-Weld.txt")}
 }
-if(owner():keyAttack1() & owner():weapon():toString():explode(" ")[2,string] == (("["+owner():weapon():id()+"]")+"[gmod_tool]") & convar("gmod_toolmode") == "simfphyswheeleditor" & owner():aimEntity():getColor() != vec(255,1,255) & D1 & owner():aimEntity():owner() == owner()){
-    Array:pushEntity(owner():aimEntity())
-    Color:pushVector4(owner():aimEntity():getColor4())
-    owner():aimEntity():setColor(vec4(255,1,255,255))
-    D1 = 0
+if(fileClk() & fileLoaded()){
+    Contents = fileRead():explode("|")
+    local Yeah = Contents[1,string]:explode(",")
+    Color4 = vec4(Yeah[1,string]:toNumber(),Yeah[2,string]:toNumber(),Yeah[3,string]:toNumber(),Yeah[4,string]:toNumber())
+    hint("Ready to use",3)
+}
+if(chatClk(owner())){LastSaid = lastSaid():explode(" ")}
+if(LastSaid[1,string]:lower() == "!c"){
+    fileWrite("GitHub/Mutli-Weld.txt",LastSaid[2,string])
+    local Yeah1 = LastSaid[2,string]:explode(",")
+    Color4 = vec4(Yeah1[1,string]:toNumber(),Yeah1[2,string]:toNumber(),Yeah1[3,string]:toNumber(),Yeah1[4,string]:toNumber())
+    hideChat(1)
+    LastSaid:clear()
+    hint("Color Changed",2)
+}
+if(changed(owner():keyAttack1()) & owner():keyAttack1() & owner():weapon():toString():explode(" ")[2,string] == (("["+owner():weapon():id()+"]")+"[gmod_tool]") & convar("gmod_toolmode") == "simfphyswheeleditor" & owner():aimEntity():getColor() != vec(255,1,255) & owner():aimEntity():owner() == owner()){
+    for(I=1,Array:count()){if(Array[I,entity] == owner():aimEntity()){Count = 1}}
+    if(Count != 1){
+        Array:pushEntity(owner():aimEntity())
+        Color:pushVector4(owner():aimEntity():getColor4())
+        owner():aimEntity():setColor(Color4)
+    }elseif(Count == 1){Count = 0,print("Dumbass")}
 }elseif(!owner():keyAttack1()){D1 = 1}
-if(owner():keyAttack2() & convar("gmod_toolmode") == "simfphyswheeleditor" & D2 & Array:count()>0 & owner():aimEntity():owner() == owner()){
+if(changed(owner():keyAttack2()) & convar("gmod_toolmode") == "simfphyswheeleditor" & Array:count()>0 & owner():aimEntity():owner() == owner()){
     for(I=1,Array:count()){
         weld(Array[I,entity],owner():aimEntity())
         Array[I,entity]:setColor(Color[I,vector4])
@@ -20,6 +39,6 @@ if(owner():keyAttack2() & convar("gmod_toolmode") == "simfphyswheeleditor" & D2 
     print("Welded.")
     Array:clear()
     Color:clear()
-    D2 = 0
-}elseif(!owner():keyAttack2()){D2 = 1}
+}
 if(last()){for(I=1,Array:count()){Array[I,entity]:setColor(Color[I,vector4])}}
+
