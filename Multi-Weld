@@ -1,6 +1,7 @@
 @name Multi-Weld
 @persist [LastSaid Contents Array Color Alpha Print]:array Color4:vector4 Count:number Tool:string
 if(first()){
+    if(convar("wire_expression2_concmd") == ""){error("wire_expression_concmd 1 is not enabled")}
     runOnTick(1)
     runOnLast(1)
     runOnFile(1)
@@ -15,22 +16,26 @@ if(first()){
 }
 if(fileClk() & fileLoaded()){
     Contents = fileRead():explode("|")
+    print(Contents)
     local Yeah = Contents[1,string]:explode(",")
     Color4 = vec4(Yeah[1,string]:toNumber(),Yeah[2,string]:toNumber(),Yeah[3,string]:toNumber(),Yeah[4,string]:toNumber())
+    Tool = Contents[2,string]
     hint("Ready to use, look in console for more details.",3)
 }elseif(fileClk() & !fileLoaded()){fileWrite("GitHub/Multi-Weld.txt","0,255,0,200" + "|" + Tool),print("Created load file"),reset()}
 if(chatClk(owner())){LastSaid = lastSaid():explode(" ")}
 if(LastSaid[1,string]:lower() == "!c"){
     local Yeah1 = LastSaid[2,string]:explode(",")
     Color4 = vec4(Yeah1[1,string]:toNumber(),Yeah1[2,string]:toNumber(),Yeah1[3,string]:toNumber(),Yeah1[4,string]:toNumber())
-    fileWrite("GitHub/Mutli-Weld.txt",LastSaid[2,string] + "|" + Tool)
+    fileWrite("GitHub/Multi-Weld.txt",LastSaid[2,string] + "|" + Tool)
     hideChat(1)
     LastSaid:clear()
     hint("Color Changed",2)
 }
 if(LastSaid[1,string]:lower() == "!tool"){
-    fileWrite("GitHub/Multi-Weld",Color4:toString() + "|" + LastSaid[2,string])
+    local ToolMode = convar("gmod_toolmode")
+    fileWrite("GitHub/Multi-Weld",Color4:toString() + "|" + ToolMode)
     hint("Tool Changed",2)
+    hideChat(1)
     LastSaid:clear()
 }
     
