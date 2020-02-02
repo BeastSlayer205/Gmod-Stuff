@@ -21,7 +21,7 @@ if(fileClk() & fileLoaded()){
 }elseif(fileClk() & !fileLoaded()){fileWrite("GitHub/Multi-Weld.txt","0,255,0,200"),print("Created load file"),reset()}
 if(chatClk(owner())){LastSaid = lastSaid():explode(" ")}
 if(LastSaid[1,string]:lower() == "!c"){
-    fileWrite("GitHub/Mutli-Weld.txt",LastSaid[2,string])
+    fileWrite("GitHub/Multi-Weld.txt",LastSaid[2,string])
     local Yeah1 = LastSaid[2,string]:explode(",")
     Color4 = vec4(Yeah1[1,string]:toNumber(),Yeah1[2,string]:toNumber(),Yeah1[3,string]:toNumber(),Yeah1[4,string]:toNumber())
     hideChat(1)
