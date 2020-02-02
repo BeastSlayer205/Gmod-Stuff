@@ -1,19 +1,24 @@
 @name Multi-Weld
-@persist [LastSaid Contents Array Color Alpha]:array Color4:vector4 Count:number
+@persist [LastSaid Contents Array Color Alpha Print]:array Color4:vector4 Count:number
 if(first()){
     runOnTick(1)
     runOnLast(1)
     runOnFile(1)
     runOnChat(1)
+    entity():propFreeze(1)
+    entity():propDraw(0)
+    entity():propNotSolid(1)
     enableConstraintUndo(0)
-    if(fileCanLoad() & fileCanWrite()){fileLoad("GitHub/Mutli-Weld.txt")}
+    Print = array("-------------------------","Equip the Simfphys Wheel Model Editor and click on something to select it","To change the color of selected props, use !c. (!c 255,0,0,255 #will make it red and not transparent)","The color you select will also save","-------------------------")
+    for(I=1,Print:count()){print(_HUD_PRINTCONSOLE,Print[I,string])}
+    if(fileCanLoad() & fileCanWrite()){fileLoad("GitHub/Multi-Weld.txt")}
 }
 if(fileClk() & fileLoaded()){
     Contents = fileRead():explode("|")
     local Yeah = Contents[1,string]:explode(",")
     Color4 = vec4(Yeah[1,string]:toNumber(),Yeah[2,string]:toNumber(),Yeah[3,string]:toNumber(),Yeah[4,string]:toNumber())
-    hint("Ready to use",3)
-}
+    hint("Ready to use, look in console for more details.",3)
+}elseif(fileClk() & !fileLoaded()){fileWrite("GitHub/Multi-Weld.txt","0,255,0,200"),print("Created load file")}
 if(chatClk(owner())){LastSaid = lastSaid():explode(" ")}
 if(LastSaid[1,string]:lower() == "!c"){
     fileWrite("GitHub/Mutli-Weld.txt",LastSaid[2,string])
