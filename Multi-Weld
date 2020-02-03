@@ -1,5 +1,5 @@
 @name Multi-Weld
-@persist [LastSaid Contents Array Color Alpha Print]:array Color4:vector4 Count:number Tool:string
+@persist [LastSaid Contents Array Color Alpha Print]:array Color4:vector4 [Count Save]:number Tool:string
 if(first()){
     if(convar("wire_expression2_concmd") == ""){error("wire_expression_concmd 1 is not enabled")}
     runOnTick(1)
@@ -10,31 +10,34 @@ if(first()){
     entity():propDraw(0)
     entity():propNotSolid(1)
     enableConstraintUndo(0)
-    Print = array("-------------------------","Equip the Simfphys Wheel Model Editor and click on something to select it","To change the color of selected props, use !c. (!c 255,0,0,255 #will make it red and not transparent)","The color you select will also save","-------------------------")
+    Print = array("-------------------------","Equip the Simfphys Wheel Model Editor and click on something to select it","To change the color of selected props, use !c. (!c 255,0,0,255 #will make it red and not transparent)","Typing '!Tool' in chat will make the current toolmode you have selected the on you use for selection","The color you select will also save","-------------------------")
     for(I=1,Print:count()){print(_HUD_PRINTCONSOLE,Print[I,string])}
     if(fileCanLoad() & fileCanWrite()){fileLoad("GitHub/Multi-Weld.txt")}
 }
 if(fileClk() & fileLoaded()){
     Contents = fileRead():explode("|")
-    print(Contents)
-    local Yeah = Contents[1,string]:explode(",")
+    local Yeah1 = Contents[1,string]:explode("[")[2,string]
+    local Yeah1 = Yeah1:explode("]")[1,string]
+    Yeah = Contents[1,string]:explode(",")
     Color4 = vec4(Yeah[1,string]:toNumber(),Yeah[2,string]:toNumber(),Yeah[3,string]:toNumber(),Yeah[4,string]:toNumber())
+    print(Color4)
     Tool = Contents[2,string]
     hint("Ready to use, look in console for more details.",3)
-}elseif(fileClk() & !fileLoaded()){fileWrite("GitHub/Multi-Weld.txt","0,255,0,200" + "|" + Tool),print("Created load file"),reset()}
+}elseif(fileClk() & !fileLoaded()){fileWrite("GitHub/Multi-Weld.txt","0,255,0,200" + "*" + Tool),print("Created load file"),reset()}
 if(chatClk(owner())){LastSaid = lastSaid():explode(" ")}
 if(LastSaid[1,string]:lower() == "!c"){
     local Yeah1 = LastSaid[2,string]:explode(",")
     Color4 = vec4(Yeah1[1,string]:toNumber(),Yeah1[2,string]:toNumber(),Yeah1[3,string]:toNumber(),Yeah1[4,string]:toNumber())
+    print(LastSaid[2,string])
     fileWrite("GitHub/Multi-Weld.txt",LastSaid[2,string] + "|" + Tool)
     hideChat(1)
     LastSaid:clear()
     hint("Color Changed",2)
 }
-if(LastSaid[1,string]:lower() == "!tool"){
-    local ToolMode = convar("gmod_toolmode")
-    fileWrite("GitHub/Multi-Weld",Color4:toString() + "|" + ToolMode)
-    hint("Tool Changed",2)
+if(LastSaid[1,string]:lower() == "!tool" & fileCanWrite()){
+    Tool = convar("gmod_toolmode")
+    hint(Tool + " selected",2)
+    fileWrite("GitHub/Multi-Weld.txt",Color4:toString() + "|" + Tool)
     hideChat(1)
     LastSaid:clear()
 }
@@ -47,7 +50,7 @@ if(changed(owner():keyAttack1()) & owner():keyAttack1() & owner():weapon():toStr
         owner():aimEntity():setColor(Color4)
     }elseif(Count == 1){Count = 0}
 }elseif(!owner():keyAttack1()){D1 = 1}
-if(changed(owner():keyAttack2()) & convar("gmod_toolmode") == "simfphyswheeleditor" & Array:count()>0 & owner():aimEntity():owner() == owner()){
+if(changed(owner():keyAttack2()) & convar("gmod_toolmode") == Tool & Array:count()>0 & owner():aimEntity():owner() == owner()){
     for(I=1,Array:count()){
         weld(Array[I,entity],owner():aimEntity())
         Array[I,entity]:setColor(Color[I,vector4])
