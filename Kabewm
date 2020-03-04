@@ -1,0 +1,37 @@
+@name
+@persist [Bombs LastSaid]:array Toggle:number [Bomb Throw]:entity BW:wirelink Pos:vector
+if(first()){
+    runOnTick(1)
+    runOnChat(1)
+    findExcludePlayerProps("*")
+    findIncludePlayerProps(owner())
+    findByClass("gmod_contr_spawner")
+    Bombs = findToArray()
+    Toggle = 0
+}
+if(chatClk(owner())){LastSaid = lastSaid():explode(" ")}
+if(LastSaid[1,string]:lower():findRE("!t")){
+    hideChat(1)
+    LastSaid:clear()
+    Toggle = !Toggle   
+}
+if(Toggle){for(I=1,Bombs:count()){Bombs[I,entity]:setAng((owner():aimPos() - Bombs[I,entity]:pos()):toAngle())}}
+if(Toggle & !owner():isTyping()& changed(owner():keyPressed("t")) & owner():keyPressed("t")){
+    for(I=1,Bombs:count()){
+        Bomb = Bombs[I,entity]
+        BW = Bomb:wirelink()
+        BW["Spawn",number] = 1
+        timer("t",2)
+    }
+}
+if(clk("t")){
+    BW["Spawn",number] = 0
+    findInSphere(Bomb:pos(),10)
+    for(I=1,findToArray():count()){
+        if(findToArray()[I,entity]:type() == "prop_physics"){
+            Throw = findToArray()[I,entity]
+            Pos = owner():aimPos() - Throw:pos()
+            findToArray()[I,entity]:applyForce((Pos + $Pos)*(Throw:mass()*10))
+        }
+    }
+}
