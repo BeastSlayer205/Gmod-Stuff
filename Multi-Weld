@@ -1,7 +1,6 @@
 @name Multi-Weld
 @persist [LastSaid Contents Array Color Alpha Print]:array Color4:vector4 [Count Save]:number Tool:string
 if(first()){
-    if(convar("wire_expression2_concmd") == ""){error("wire_expression_concmd 1 is not enabled")}
     runOnTick(1)
     runOnLast(1)
     runOnFile(1)
@@ -42,7 +41,7 @@ if(LastSaid[1,string]:lower() == "!tool" & fileCanWrite()){
     LastSaid:clear()
 }
     
-if(changed(owner():keyAttack1()) & owner():keyAttack1() & owner():weapon():toString():explode(" ")[2,string] == (("["+owner():weapon():id()+"]")+"[gmod_tool]") & convar("gmod_toolmode") == Tool & owner():aimEntity():getColor() != vec(255,1,255) & owner():aimEntity():owner() == owner()){
+if(changed(owner():keyAttack1()) & owner():keyAttack1() & owner():weapon():type() == "gmod_tool" & owner():tool() == Tool & owner():aimEntity():getColor() != vec(255,1,255) & owner():aimEntity():owner() == owner()){
     for(I=1,Array:count()){if(Array[I,entity] == owner():aimEntity()){Count = 1}}
     if(Count != 1){
         Array:pushEntity(owner():aimEntity())
@@ -50,7 +49,7 @@ if(changed(owner():keyAttack1()) & owner():keyAttack1() & owner():weapon():toStr
         owner():aimEntity():setColor(Color4)
     }elseif(Count == 1){Count = 0}
 }elseif(!owner():keyAttack1()){D1 = 1}
-if(changed(owner():keyAttack2()) & convar("gmod_toolmode") == Tool & Array:count()>0 & owner():aimEntity():owner() == owner()){
+if(changed(owner():keyAttack2()) & owner():tool() == Tool & Array:count()>0 & owner():aimEntity():owner() == owner()){
     for(I=1,Array:count()){
         weld(Array[I,entity],owner():aimEntity())
         Array[I,entity]:setColor(Color[I,vector4])
@@ -60,4 +59,3 @@ if(changed(owner():keyAttack2()) & convar("gmod_toolmode") == Tool & Array:count
     Color:clear()
 }
 if(last()){for(I=1,Array:count()){Array[I,entity]:setColor(Color[I,vector4])}}
-
