@@ -11,6 +11,7 @@ if(first()){
     runOnChat(1)
     runOnLast(1)
     
+    
     enableConstraintUndo(0)
     
     function number chatCMD(S:string,L:array,N:number,N2:number){
@@ -28,6 +29,10 @@ if(first()){
         local Ret = This:explode(",")
         for(I=1,Ret:count()){Ret:pushNumber(Ret[I,string]:toNumber())}
         return vec(Ret[4,number],Ret[5,number],Ret[6,number])
+    }
+    
+    function string entity:sID(){
+        return toString(This:id())
     }
 
     
@@ -67,14 +72,20 @@ if(chatClk(owner())){
     }
 }
 
-if(changed(owner():keyAttack1()) & owner():keyAttack1() & owner():tool() == Load["tool",string]){
+if(changed(owner():keyAttack1()) & owner():keyAttack1() & owner():tool() == Load["tool",string] & owner():aimEntity():owner() == owner()){
     local Ent = owner():aimEntity()
     
-    if(Ent:owner() == owner() & !Props:exists(Ent:id():toString())){
-        Props[Ent:id():toString(),array] = array(Ent,Ent:getMaterial(),Ent:getColor()) 
+    if(!Props:exists(Ent:sID())){
+        Props[Ent:sID(),array] = array(Ent,Ent:getMaterial(),Ent:getColor()) 
         Ent:setMaterial(Load["material",string])
         Ent:setColor(Load["color",string]:toVector())
+    }else{
+        local Array = Props[Ent:sID(),array]
+        Ent:setMaterial(Array[2,string])
+        Ent:setColor(Array[3,vector])
+        Props:removeArray(Ent:sID())
     }
+        
 }
 
 if(changed(owner():keyAttack2()) & owner():keyAttack2() & owner():tool() == Load["tool",string]){
