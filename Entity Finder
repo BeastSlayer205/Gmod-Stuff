@@ -1,0 +1,49 @@
+@name
+@persist [LS Finds]:array [FOwners Replace]:table
+
+if(first()){
+    runOnChat(1)
+    findExcludePlayerProps("*")
+    for(I=1,players():count()){findIncludePlayerProps(players()[I,entity])}
+    
+    
+    function number array:find(S:string){
+        local Ret = 0
+        for(I=1,This:count()){
+            if(This[I,entity]:type() == S){
+                Ret = 1
+            }
+        }
+        return Ret
+    }
+    
+    Replace = table("prop" = "prop_physics","rope" = "keyframe_rope")
+    
+    
+}
+
+if(chatClk(owner())){
+    LS = owner():lastSaid():lower():explode(" ")
+    
+    if(LS[1,string] == "!find"){
+        hideChat(1)
+        if(Replace:exists(LS[2,string])){LS[2,string] = Replace[LS[2,string],string]}
+        
+        findByClass(LS[2,string])
+        Finds = findToArray()
+        
+        for(I=1,Finds:count()){
+            local Owner = Finds[I,entity]:owner():name()
+            
+            if(!FOwners:exists(Owner)){FOwners[Owner,number] = 0}
+            
+            FOwners[Owner,number] = FOwners[Owner,number] + 1
+        }
+        
+        if(Finds:count() > 0){
+            foreach(K,V:number = FOwners){
+                print(K + " has " + V + " " + LS[2,string])
+            }
+        }else{print("Could not find anything")}
+    }
+}
